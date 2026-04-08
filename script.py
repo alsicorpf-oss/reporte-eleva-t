@@ -1,4 +1,6 @@
 import pandas as pd
+from datetime import datetime
+import os
 
 # ==========================================
 # 📥 CONFIGURACIÓN
@@ -7,6 +9,8 @@ import pandas as pd
 ARCHIVO = "nuevo_formulario_eleva_t.xlsx"
 HOJA_PRINCIPAL = "Sheet1"
 HOJA_SECUNDARIA = "Hoja1"
+
+CARPETA_SALIDA = "reportes"
 
 COLUMNAS_ORIGEN = {
     "id_colaborador": "ID DE COLABORADOR DEL EMPLEADO A ENTREVISTAR",
@@ -63,7 +67,7 @@ for col in COLUMNAS_HOJA1.values():
         raise Exception(f"❌ No se encontró la columna en Hoja1: {col}")
 
 # ==========================================
-# 🧹 FILTRAR SOLO ID VACÍO (NO MÁS)
+# 🧹 FILTRAR SOLO IDS VÁLIDOS
 # ==========================================
 
 col_id = COLUMNAS_ORIGEN["id_colaborador"]
@@ -100,7 +104,6 @@ for _, row in df_filtrado.iterrows():
         nombre = None
         sucursal = None
 
-    # 🔥 asegurar que NaN no pase
     if pd.isna(nombre):
         nombre = None
     if pd.isna(sucursal):
@@ -126,13 +129,24 @@ df_resultado = df_resultado.sort_values(
 )
 
 # ==========================================
-# 💾 EXPORTAR
+# 💾 EXPORTAR CON TIMESTAMP
 # ==========================================
 
-OUTPUT = "reporte_colaboradores.xlsx"
-df_resultado.to_excel(OUTPUT, index=False)
+# Crear carpeta si no existe
+os.makedirs(CARPETA_SALIDA, exist_ok=True)
+
+# Generar timestamp
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+# Nombre archivo
+nombre_archivo = f"reporte_colaboradores_{timestamp}.xlsx"
+
+ruta_salida = os.path.join(CARPETA_SALIDA, nombre_archivo)
+
+# Guardar archivo
+df_resultado.to_excel(ruta_salida, index=False)
 
 print("\n📄 Resultado generado:")
 print(df_resultado.head(10))
 
-print(f"\n✅ Reporte generado: {OUTPUT}")
+print(f"\n✅ Reporte guardado en: {ruta_salida}")
