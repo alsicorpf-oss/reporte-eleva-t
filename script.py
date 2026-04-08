@@ -1,14 +1,13 @@
 import pandas as pd
 
 # ==========================================
-# 📥 CONFIGURACIÓN DE ENTRADA
+# 📥 CONFIGURACIÓN
 # ==========================================
 
 ARCHIVO = "nuevo_formulario_eleva_t.xlsx"
 HOJA_PRINCIPAL = "Sheet1"
 HOJA_SECUNDARIA = "Hoja1"
 
-# Columnas en el Excel original (FUENTE)
 COLUMNAS_ORIGEN = {
     "id_colaborador": "ID DE COLABORADOR DEL EMPLEADO A ENTREVISTAR",
     "pais": "SELECCIONA EL PAÍS.",
@@ -16,14 +15,12 @@ COLUMNAS_ORIGEN = {
     "fecha_contacto": "Hora de inicio"
 }
 
-# Columnas desde Hoja1
 COLUMNAS_HOJA1 = {
     "id_colaborador": "ID COLABORADOR",
     "nombre": "COLABORADOR",
     "sucursal": "LUGAR TRABAJO"
 }
 
-# Columnas del nuevo reporte (DESTINO)
 COLUMNAS_DESTINO = {
     "id_colaborador": "CODIGO_COLABORADOR",
     "pais": "PAIS",
@@ -34,13 +31,22 @@ COLUMNAS_DESTINO = {
 }
 
 # ==========================================
+# 🔧 FUNCIÓN LIMPIEZA ID
+# ==========================================
+
+def limpiar_id(valor):
+    try:
+        return str(int(float(valor)))
+    except:
+        return str(valor).strip()
+
+# ==========================================
 # 📂 LEER ARCHIVOS
 # ==========================================
 
 df = pd.read_excel(ARCHIVO, sheet_name=HOJA_PRINCIPAL)
 df_hoja1 = pd.read_excel(ARCHIVO, sheet_name=HOJA_SECUNDARIA)
 
-# Limpiar columnas
 df.columns = df.columns.astype(str).str.strip()
 df_hoja1.columns = df_hoja1.columns.astype(str).str.strip()
 
@@ -57,7 +63,7 @@ for col in COLUMNAS_HOJA1.values():
         raise Exception(f"❌ No se encontró la columna en Hoja1: {col}")
 
 # ==========================================
-# 🧹 FILTRAR DATOS PRINCIPALES
+# 🧹 FILTRAR DATOS
 # ==========================================
 
 col_id = COLUMNAS_ORIGEN["id_colaborador"]
@@ -68,27 +74,24 @@ col_fecha = COLUMNAS_ORIGEN["fecha_contacto"]
 df_filtrado = df[[col_id, col_pais, col_contacto, col_fecha]].dropna()
 
 # ==========================================
-# 🔗 PREPARAR JOIN CON HOJA1
+# 🔑 NORMALIZAR IDS
 # ==========================================
 
-col_id_h1 = COLUMNAS_HOJA1["id_colaborador"]
-
-# Normalizar tipos (CLAVE 🔥)
-df_filtrado[col_id] = df_filtrado[col_id].astype(str).str.strip()
-df_hoja1[col_id_h1] = df_hoja1[col_id_h1].astype(str).str.strip()
+df_filtrado["ID_LIMPIO"] = df_filtrado[col_id].apply(limpiar_id)
+df_hoja1["ID_LIMPIO"] = df_hoja1[COLUMNAS_HOJA1["id_colaborador"]].apply(limpiar_id)
 
 # ==========================================
-# 🔄 PROCESAR DATOS (JOIN)
+# 🔄 PROCESAR
 # ==========================================
 
 resultado = []
 
 for _, row in df_filtrado.iterrows():
 
-    id_actual = row[col_id]
+    id_original = row[col_id]
+    id_limpio = row["ID_LIMPIO"]
 
-    # Buscar en Hoja1
-    match = df_hoja1[df_hoja1[col_id_h1] == id_actual]
+    match = df_hoja1[df_hoja1["ID_LIMPIO"] == id_limpio]
 
     if not match.empty:
         nombre = match.iloc[0][COLUMNAS_HOJA1["nombre"]]
@@ -98,7 +101,7 @@ for _, row in df_filtrado.iterrows():
         sucursal = None
 
     resultado.append({
-        COLUMNAS_DESTINO["id_colaborador"]: id_actual,
+        COLUMNAS_DESTINO["id_colaborador"]: id_original,
         COLUMNAS_DESTINO["pais"]: row[col_pais],
         COLUMNAS_DESTINO["contacto"]: row[col_contacto],
         COLUMNAS_DESTINO["fecha_contacto"]: row[col_fecha],
@@ -107,12 +110,11 @@ for _, row in df_filtrado.iterrows():
     })
 
 # ==========================================
-# 📊 CREAR DATAFRAME FINAL
+# 📊 RESULTADO
 # ==========================================
 
 df_resultado = pd.DataFrame(resultado)
 
-# Ordenar
 df_resultado = df_resultado.sort_values(
     by=COLUMNAS_DESTINO["id_colaborador"]
 )
