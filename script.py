@@ -43,35 +43,26 @@ for key, col in COLUMNAS_ORIGEN.items():
 print("✅ Columnas validadas correctamente\n")
 
 # ==========================================
-# 🧹 LIMPIAR DATOS
+# 🧹 FILTRAR SOLO COLUMNAS NECESARIAS
 # ==========================================
 
 col_id = COLUMNAS_ORIGEN["id_colaborador"]
 col_pais = COLUMNAS_ORIGEN["pais"]
 
-# Eliminar nulos
-df = df[[col_id, col_pais]].dropna()
+df_filtrado = df[[col_id, col_pais]].dropna()
 
 # ==========================================
-# 🔄 AGRUPAR POR COLABORADOR
+# 🔄 PROCESAR TODAS LAS FILAS (SIN AGRUPAR)
 # ==========================================
 
-print("🔄 Procesando datos...")
+print("🔄 Procesando datos (sin eliminar duplicados)...")
 
 resultado = []
 
-# Obtener IDs únicos
-ids_unicos = df[col_id].unique()
-
-for id_colab in ids_unicos:
-    registros = df[df[col_id] == id_colab]
-
-    # Tomar el primer valor de país (puedes cambiar lógica después)
-    pais = registros[col_pais].iloc[0]
-
+for _, row in df_filtrado.iterrows():
     resultado.append({
-        COLUMNAS_DESTINO["id_colaborador"]: id_colab,
-        COLUMNAS_DESTINO["pais"]: pais
+        COLUMNAS_DESTINO["id_colaborador"]: row[col_id],
+        COLUMNAS_DESTINO["pais"]: row[col_pais]
     })
 
 # ==========================================
@@ -81,7 +72,7 @@ for id_colab in ids_unicos:
 df_resultado = pd.DataFrame(resultado)
 
 print("\n📄 Resultado generado:")
-print(df_resultado.head())
+print(df_resultado.head(10))
 
 # ==========================================
 # 💾 EXPORTAR A EXCEL
