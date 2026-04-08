@@ -3,7 +3,7 @@ name: Procesar Excel
 on:
   repository_dispatch:
     types: [procesar_excel]
-  workflow_dispatch:   # permite ejecutarlo manualmente desde GitHub
+  workflow_dispatch:
 
 jobs:
   procesar:
@@ -23,3 +23,15 @@ jobs:
 
       - name: Ejecutar script
         run: python script.py
+
+      # 🔥 ESTE PASO ES EL QUE TE FALTABA
+      - name: Commit y push del reporte
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+          git add reportes/*.xlsx
+
+          git commit -m "Nuevo reporte generado automáticamente" || echo "No hay cambios"
+
+          git push
