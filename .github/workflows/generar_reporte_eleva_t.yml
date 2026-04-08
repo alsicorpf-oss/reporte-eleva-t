@@ -1,0 +1,24 @@
+name: Generar Reporte Eleva-T
+
+on:
+  repository_dispatch:
+    types: [procesar_excel]
+
+jobs:
+  procesar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        run: pip install pandas openpyxl
+
+      - name: Ejecutar script
+        run: python script.py
