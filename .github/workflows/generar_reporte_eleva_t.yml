@@ -1,4 +1,4 @@
-name: Procesar Excel
+name: Generar Reporte Eleva-T
 
 on:
   repository_dispatch:
