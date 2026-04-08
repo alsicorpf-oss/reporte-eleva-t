@@ -24,10 +24,10 @@ COLUMNAS_DESTINO = {
 }
 
 # ==========================================
-# 📂 LEER ARCHIVO
+# 📂 LEER ARCHIVO PRINCIPAL
 # ==========================================
 
-print("📂 Leyendo archivo...")
+print("📂 Leyendo archivo principal...")
 
 df = pd.read_excel(ARCHIVO, sheet_name=HOJA)
 
@@ -58,7 +58,7 @@ col_fecha = COLUMNAS_ORIGEN["fecha_contacto"]
 df_filtrado = df[[col_id, col_pais, col_contacto, col_fecha]].dropna()
 
 # ==========================================
-# 🔄 PROCESAR TODAS LAS FILAS
+# 🔄 PROCESAR DATOS
 # ==========================================
 
 print("🔄 Procesando datos...")
@@ -79,7 +79,7 @@ for _, row in df_filtrado.iterrows():
 
 df_resultado = pd.DataFrame(resultado)
 
-# 🔥 ORDENAR POR CÓDIGO DE COLABORADOR
+# Ordenar
 df_resultado = df_resultado.sort_values(
     by=COLUMNAS_DESTINO["id_colaborador"]
 )
@@ -96,3 +96,23 @@ OUTPUT = "reporte_colaboradores.xlsx"
 df_resultado.to_excel(OUTPUT, index=False)
 
 print(f"\n✅ Reporte generado: {OUTPUT}")
+
+# ==========================================
+# 🔍 NUEVA SECCIÓN: DEBUG HOJA1
+# ==========================================
+
+print("\n==============================")
+print("🔍 DEBUG HOJA1")
+print("==============================")
+
+df_hoja1 = pd.read_excel(ARCHIVO, sheet_name="Hoja1")
+
+# Limpiar nombres
+df_hoja1.columns = df_hoja1.columns.astype(str).str.strip()
+
+print("\n📊 Columnas en Hoja1:")
+for col in df_hoja1.columns:
+    print(f"'{col}'")
+
+print("\n🔍 Primeras filas de Hoja1:")
+print(df_hoja1.head(10))
