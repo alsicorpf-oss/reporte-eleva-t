@@ -4,28 +4,27 @@ archivo = "nuevo_formulario_eleva_t.xlsx"
 
 print("📂 Leyendo archivo...")
 
-# 🔹 Ver hojas disponibles
-xls = pd.ExcelFile(archivo)
-print("\n📑 Hojas disponibles:")
-print(xls.sheet_names)
+# 🔹 Leer Sheet1
+df = pd.read_excel(archivo, sheet_name="Sheet1")
 
-# 🔹 Leer Sheet1 SIN asumir encabezados
-df = pd.read_excel(archivo, sheet_name="Sheet1", header=None)
+print("✅ Archivo leído correctamente\n")
 
-print("\n🔍 Primeras 10 filas (RAW):")
-print(df.head(10))
+# 🔹 Limpiar nombres de columnas
+df.columns = df.columns.astype(str).str.strip()
 
-# 🔹 Ahora intentar con header en fila 0
-df2 = pd.read_excel(archivo, sheet_name="Sheet1")
+# 🎯 Nombre exacto de la columna
+columna = "ID DE COLABORADOR DEL EMPLEADO A ENTREVISTAR"
 
-print("\n📊 Columnas detectadas (modo normal):")
-print(df2.columns.tolist())
+# 🚨 Validación
+if columna not in df.columns:
+    print(f"\n❌ No se encontró la columna: {columna}")
+else:
+    print(f"\n🆔 Columna encontrada: {columna}")
 
-# 🔹 Mostrar columnas con comillas (detecta espacios invisibles)
-print("\n🧪 Columnas EXACTAS:")
-for col in df2.columns:
-    print(f"'{col}'")
+    # 🔹 Obtener todos los valores (sin nulos)
+    ids = df[columna].dropna()
 
-# 🔹 Mostrar primeras filas interpretadas
-print("\n📄 Data interpretada:")
-print(df2.head())
+    print("\n📋 TODOS los IDs encontrados:\n")
+
+    for i, valor in enumerate(ids, start=1):
+        print(f"{i}. {valor}")
