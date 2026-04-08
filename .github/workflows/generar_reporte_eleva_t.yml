@@ -1,8 +1,9 @@
-name: Generar Reporte Eleva-T
+name: Procesar Excel
 
 on:
   repository_dispatch:
     types: [procesar_excel]
+  workflow_dispatch:   # permite ejecutarlo manualmente desde GitHub
 
 jobs:
   procesar:
