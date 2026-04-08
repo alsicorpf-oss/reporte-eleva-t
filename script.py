@@ -31,7 +31,7 @@ COLUMNAS_DESTINO = {
 }
 
 # ==========================================
-# 🔧 FUNCIÓN LIMPIEZA ID
+# 🔧 LIMPIAR ID
 # ==========================================
 
 def limpiar_id(valor):
@@ -63,7 +63,7 @@ for col in COLUMNAS_HOJA1.values():
         raise Exception(f"❌ No se encontró la columna en Hoja1: {col}")
 
 # ==========================================
-# 🧹 FILTRAR DATOS
+# 🧹 FILTRAR SOLO ID VACÍO (NO MÁS)
 # ==========================================
 
 col_id = COLUMNAS_ORIGEN["id_colaborador"]
@@ -71,7 +71,7 @@ col_pais = COLUMNAS_ORIGEN["pais"]
 col_contacto = COLUMNAS_ORIGEN["contacto"]
 col_fecha = COLUMNAS_ORIGEN["fecha_contacto"]
 
-df_filtrado = df[[col_id, col_pais, col_contacto, col_fecha]].dropna()
+df_filtrado = df[df[col_id].notna()].copy()
 
 # ==========================================
 # 🔑 NORMALIZAR IDS
@@ -100,11 +100,17 @@ for _, row in df_filtrado.iterrows():
         nombre = None
         sucursal = None
 
+    # 🔥 asegurar que NaN no pase
+    if pd.isna(nombre):
+        nombre = None
+    if pd.isna(sucursal):
+        sucursal = None
+
     resultado.append({
         COLUMNAS_DESTINO["id_colaborador"]: id_original,
-        COLUMNAS_DESTINO["pais"]: row[col_pais],
-        COLUMNAS_DESTINO["contacto"]: row[col_contacto],
-        COLUMNAS_DESTINO["fecha_contacto"]: row[col_fecha],
+        COLUMNAS_DESTINO["pais"]: row.get(col_pais, None),
+        COLUMNAS_DESTINO["contacto"]: row.get(col_contacto, None),
+        COLUMNAS_DESTINO["fecha_contacto"]: row.get(col_fecha, None),
         COLUMNAS_DESTINO["nombre"]: nombre,
         COLUMNAS_DESTINO["sucursal"]: sucursal
     })
