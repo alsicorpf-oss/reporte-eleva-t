@@ -1,4 +1,4 @@
-name: Generar Reporte Eleva-T
+name: Procesar Excel
 
 on:
   repository_dispatch:
@@ -27,6 +27,7 @@ jobs:
       - name: Ejecutar script
         run: python script.py
 
+      # 🔹 Commit del reporte
       - name: Commit y push del reporte
         run: |
           git config --global user.name "github-actions"
@@ -35,5 +36,19 @@ jobs:
           git add reportes/*.xlsx
 
           git commit -m "Nuevo reporte generado automáticamente" || echo "No hay cambios"
+
+          git push
+
+      # 🔥 NUEVO PASO: eliminar archivo original
+      - name: Eliminar archivo original
+        run: |
+          rm -f nuevo_formulario_eleva_t.xlsx
+
+      # 🔹 Commit de eliminación
+      - name: Commit eliminación del archivo original
+        run: |
+          git add -u
+
+          git commit -m "Eliminar archivo original procesado" || echo "No hay cambios"
 
           git push
