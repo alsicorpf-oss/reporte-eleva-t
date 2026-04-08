@@ -24,7 +24,7 @@ COLUMNAS_DESTINO = {
 }
 
 # ==========================================
-# 📂 LEER ARCHIVO PRINCIPAL
+# 📂 PROCESO ORIGINAL (NO TOCAR)
 # ==========================================
 
 print("📂 Leyendo archivo principal...")
@@ -33,12 +33,7 @@ df = pd.read_excel(ARCHIVO, sheet_name=HOJA)
 
 print("✅ Archivo leído correctamente\n")
 
-# Limpiar nombres de columnas
 df.columns = df.columns.astype(str).str.strip()
-
-# ==========================================
-# 🔍 VALIDAR COLUMNAS
-# ==========================================
 
 for key, col in COLUMNAS_ORIGEN.items():
     if col not in df.columns:
@@ -46,20 +41,12 @@ for key, col in COLUMNAS_ORIGEN.items():
 
 print("✅ Columnas validadas correctamente\n")
 
-# ==========================================
-# 🧹 FILTRAR SOLO COLUMNAS NECESARIAS
-# ==========================================
-
 col_id = COLUMNAS_ORIGEN["id_colaborador"]
 col_pais = COLUMNAS_ORIGEN["pais"]
 col_contacto = COLUMNAS_ORIGEN["contacto"]
 col_fecha = COLUMNAS_ORIGEN["fecha_contacto"]
 
 df_filtrado = df[[col_id, col_pais, col_contacto, col_fecha]].dropna()
-
-# ==========================================
-# 🔄 PROCESAR DATOS
-# ==========================================
 
 print("🔄 Procesando datos...")
 
@@ -73,13 +60,8 @@ for _, row in df_filtrado.iterrows():
         COLUMNAS_DESTINO["fecha_contacto"]: row[col_fecha]
     })
 
-# ==========================================
-# 📊 CREAR DATAFRAME FINAL
-# ==========================================
-
 df_resultado = pd.DataFrame(resultado)
 
-# Ordenar
 df_resultado = df_resultado.sort_values(
     by=COLUMNAS_DESTINO["id_colaborador"]
 )
@@ -87,32 +69,36 @@ df_resultado = df_resultado.sort_values(
 print("\n📄 Resultado generado:")
 print(df_resultado.head(10))
 
-# ==========================================
-# 💾 EXPORTAR A EXCEL
-# ==========================================
-
 OUTPUT = "reporte_colaboradores.xlsx"
-
 df_resultado.to_excel(OUTPUT, index=False)
 
 print(f"\n✅ Reporte generado: {OUTPUT}")
 
 # ==========================================
-# 🔍 NUEVA SECCIÓN: DEBUG HOJA1
+# 🔍 DEBUG HOJA1 (MEJORADO)
 # ==========================================
 
 print("\n==============================")
-print("🔍 DEBUG HOJA1")
+print("🔍 DEBUG HOJA1 (TODAS LAS COLUMNAS)")
 print("==============================")
 
 df_hoja1 = pd.read_excel(ARCHIVO, sheet_name="Hoja1")
 
-# Limpiar nombres
 df_hoja1.columns = df_hoja1.columns.astype(str).str.strip()
 
-print("\n📊 Columnas en Hoja1:")
-for col in df_hoja1.columns:
+# 🔥 MOSTRAR TODAS LAS COLUMNAS COMO ARRAY COMPLETO
+columnas = df_hoja1.columns.tolist()
+
+print("\n📊 TOTAL COLUMNAS:", len(columnas))
+
+print("\n📋 COLUMNAS COMPLETAS:")
+print(columnas)
+
+# 🔥 OPCIONAL: imprimir una por línea (más legible)
+print("\n📌 COLUMNAS UNA POR UNA:")
+for col in columnas:
     print(f"'{col}'")
 
+# 🔍 Mostrar primeras filas
 print("\n🔍 Primeras filas de Hoja1:")
 print(df_hoja1.head(10))
