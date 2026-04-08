@@ -52,7 +52,7 @@ col_pais = COLUMNAS_ORIGEN["pais"]
 df_filtrado = df[[col_id, col_pais]].dropna()
 
 # ==========================================
-# 🔄 PROCESAR TODAS LAS FILAS (SIN AGRUPAR)
+# 🔄 PROCESAR TODAS LAS FILAS (SIN ELIMINAR DUPLICADOS)
 # ==========================================
 
 print("🔄 Procesando datos (sin eliminar duplicados)...")
@@ -71,7 +71,12 @@ for _, row in df_filtrado.iterrows():
 
 df_resultado = pd.DataFrame(resultado)
 
-print("\n📄 Resultado generado:")
+# 🔥 ORDENAR POR CÓDIGO DE COLABORADOR
+df_resultado = df_resultado.sort_values(
+    by=COLUMNAS_DESTINO["id_colaborador"]
+)
+
+print("\n📄 Resultado generado (ordenado):")
 print(df_resultado.head(10))
 
 # ==========================================
