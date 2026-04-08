@@ -4,15 +4,28 @@ archivo = "nuevo_formulario_eleva_t.xlsx"
 
 print("📂 Leyendo archivo...")
 
-# Leer Excel
-df = pd.read_excel(archivo)
+# 🔹 Ver hojas disponibles
+xls = pd.ExcelFile(archivo)
+print("\n📑 Hojas disponibles:")
+print(xls.sheet_names)
 
-print("✅ Archivo leído correctamente\n")
+# 🔹 Leer Sheet1 SIN asumir encabezados
+df = pd.read_excel(archivo, sheet_name="Sheet1", header=None)
 
-# Mostrar columnas
-print("📊 Columnas encontradas:")
-print(df.columns.tolist())
+print("\n🔍 Primeras 10 filas (RAW):")
+print(df.head(10))
 
-# Mostrar primeras filas
-print("\n🔍 Primeras filas:")
-print(df.head())
+# 🔹 Ahora intentar con header en fila 0
+df2 = pd.read_excel(archivo, sheet_name="Sheet1")
+
+print("\n📊 Columnas detectadas (modo normal):")
+print(df2.columns.tolist())
+
+# 🔹 Mostrar columnas con comillas (detecta espacios invisibles)
+print("\n🧪 Columnas EXACTAS:")
+for col in df2.columns:
+    print(f"'{col}'")
+
+# 🔹 Mostrar primeras filas interpretadas
+print("\n📄 Data interpretada:")
+print(df2.head())
