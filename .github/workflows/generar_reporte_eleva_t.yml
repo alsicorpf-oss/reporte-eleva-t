@@ -27,7 +27,7 @@ jobs:
       - name: Ejecutar script
         run: python script.py
 
-      # 🔹 Commit del reporte
+      #  Commit del reporte
       - name: Commit y push del reporte
         run: |
           git config --global user.name "github-actions"
@@ -39,7 +39,6 @@ jobs:
 
           git push
 
-      # 🔥 NUEVO PASO: eliminar archivo original
       - name: Eliminar archivo original
         run: |
           rm -f nuevo_formulario_eleva_t.xlsx
