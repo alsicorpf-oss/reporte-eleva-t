@@ -10,13 +10,17 @@ HOJA = "Sheet1"
 # Columnas en el Excel original (FUENTE)
 COLUMNAS_ORIGEN = {
     "id_colaborador": "ID DE COLABORADOR DEL EMPLEADO A ENTREVISTAR",
-    "pais": "SELECCIONA EL PAÍS."
+    "pais": "SELECCIONA EL PAÍS.",
+    "contacto": "Column1",
+    "fecha_contacto": "Hora de inicio"
 }
 
 # Columnas del nuevo reporte (DESTINO)
 COLUMNAS_DESTINO = {
     "id_colaborador": "CODIGO_COLABORADOR",
-    "pais": "PAIS"
+    "pais": "PAIS",
+    "contacto": "CONTACTO",
+    "fecha_contacto": "FECHA DE CONTACTO"
 }
 
 # ==========================================
@@ -48,21 +52,25 @@ print("✅ Columnas validadas correctamente\n")
 
 col_id = COLUMNAS_ORIGEN["id_colaborador"]
 col_pais = COLUMNAS_ORIGEN["pais"]
+col_contacto = COLUMNAS_ORIGEN["contacto"]
+col_fecha = COLUMNAS_ORIGEN["fecha_contacto"]
 
-df_filtrado = df[[col_id, col_pais]].dropna()
+df_filtrado = df[[col_id, col_pais, col_contacto, col_fecha]].dropna()
 
 # ==========================================
-# 🔄 PROCESAR TODAS LAS FILAS (SIN ELIMINAR DUPLICADOS)
+# 🔄 PROCESAR TODAS LAS FILAS
 # ==========================================
 
-print("🔄 Procesando datos (sin eliminar duplicados)...")
+print("🔄 Procesando datos...")
 
 resultado = []
 
 for _, row in df_filtrado.iterrows():
     resultado.append({
         COLUMNAS_DESTINO["id_colaborador"]: row[col_id],
-        COLUMNAS_DESTINO["pais"]: row[col_pais]
+        COLUMNAS_DESTINO["pais"]: row[col_pais],
+        COLUMNAS_DESTINO["contacto"]: row[col_contacto],
+        COLUMNAS_DESTINO["fecha_contacto"]: row[col_fecha]
     })
 
 # ==========================================
@@ -76,7 +84,7 @@ df_resultado = df_resultado.sort_values(
     by=COLUMNAS_DESTINO["id_colaborador"]
 )
 
-print("\n📄 Resultado generado (ordenado):")
+print("\n📄 Resultado generado:")
 print(df_resultado.head(10))
 
 # ==========================================
