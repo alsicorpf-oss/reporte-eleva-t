@@ -34,10 +34,6 @@ COLUMNAS_DESTINO = {
     "sucursal": "SUCURSAL"
 }
 
-# ==========================================
-# 🔧 LIMPIAR ID
-# ==========================================
-
 def limpiar_id(valor):
     try:
         return str(int(float(valor)))
@@ -55,19 +51,7 @@ df.columns = df.columns.astype(str).str.strip()
 df_hoja1.columns = df_hoja1.columns.astype(str).str.strip()
 
 # ==========================================
-# 🔍 VALIDAR COLUMNAS
-# ==========================================
-
-for col in COLUMNAS_ORIGEN.values():
-    if col not in df.columns:
-        raise Exception(f"❌ No se encontró la columna: {col}")
-
-for col in COLUMNAS_HOJA1.values():
-    if col not in df_hoja1.columns:
-        raise Exception(f"❌ No se encontró la columna en Hoja1: {col}")
-
-# ==========================================
-# 🧹 FILTRAR SOLO IDS VÁLIDOS
+# 🧹 FILTRAR
 # ==========================================
 
 col_id = COLUMNAS_ORIGEN["id_colaborador"]
@@ -76,10 +60,6 @@ col_contacto = COLUMNAS_ORIGEN["contacto"]
 col_fecha = COLUMNAS_ORIGEN["fecha_contacto"]
 
 df_filtrado = df[df[col_id].notna()].copy()
-
-# ==========================================
-# 🔑 NORMALIZAR IDS
-# ==========================================
 
 df_filtrado["ID_LIMPIO"] = df_filtrado[col_id].apply(limpiar_id)
 df_hoja1["ID_LIMPIO"] = df_hoja1[COLUMNAS_HOJA1["id_colaborador"]].apply(limpiar_id)
@@ -118,10 +98,6 @@ for _, row in df_filtrado.iterrows():
         COLUMNAS_DESTINO["sucursal"]: sucursal
     })
 
-# ==========================================
-# 📊 RESULTADO
-# ==========================================
-
 df_resultado = pd.DataFrame(resultado)
 
 df_resultado = df_resultado.sort_values(
@@ -129,24 +105,14 @@ df_resultado = df_resultado.sort_values(
 )
 
 # ==========================================
-# 💾 EXPORTAR CON TIMESTAMP
+# 💾 GUARDAR
 # ==========================================
 
-# Crear carpeta si no existe
 os.makedirs(CARPETA_SALIDA, exist_ok=True)
 
-# Generar timestamp
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+ruta = f"{CARPETA_SALIDA}/reporte_{timestamp}.xlsx"
 
-# Nombre archivo
-nombre_archivo = f"reporte_colaboradores_{timestamp}.xlsx"
+df_resultado.to_excel(ruta, index=False)
 
-ruta_salida = os.path.join(CARPETA_SALIDA, nombre_archivo)
-
-# Guardar archivo
-df_resultado.to_excel(ruta_salida, index=False)
-
-print("\n📄 Resultado generado:")
-print(df_resultado.head(10))
-
-print(f"\n✅ Reporte guardado en: {ruta_salida}")
+print(f"Archivo generado: {ruta}")
