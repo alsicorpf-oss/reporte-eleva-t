@@ -34,6 +34,10 @@ COLUMNAS_DESTINO = {
     "sucursal": "SUCURSAL"
 }
 
+# ==========================================
+# 🔧 LIMPIAR ID
+# ==========================================
+
 def limpiar_id(valor):
     try:
         return str(int(float(valor)))
@@ -60,6 +64,10 @@ col_contacto = COLUMNAS_ORIGEN["contacto"]
 col_fecha = COLUMNAS_ORIGEN["fecha_contacto"]
 
 df_filtrado = df[df[col_id].notna()].copy()
+
+# ==========================================
+# 🔑 NORMALIZAR IDS
+# ==========================================
 
 df_filtrado["ID_LIMPIO"] = df_filtrado[col_id].apply(limpiar_id)
 df_hoja1["ID_LIMPIO"] = df_hoja1[COLUMNAS_HOJA1["id_colaborador"]].apply(limpiar_id)
@@ -98,14 +106,27 @@ for _, row in df_filtrado.iterrows():
         COLUMNAS_DESTINO["sucursal"]: sucursal
     })
 
+# ==========================================
+# 📊 RESULTADO
+# ==========================================
+
 df_resultado = pd.DataFrame(resultado)
 
-df_resultado = df_resultado.sort_values(
-    by=COLUMNAS_DESTINO["id_colaborador"]
+# 🔥 NORMALIZAR COLUMNA ANTES DE ORDENAR
+col_sort = COLUMNAS_DESTINO["id_colaborador"]
+
+df_resultado[col_sort] = (
+    df_resultado[col_sort]
+    .astype(str)
+    .str.replace(".0", "", regex=False)
+    .str.strip()
 )
 
+# 🔥 ORDENAR (YA SIN ERROR)
+df_resultado = df_resultado.sort_values(by=col_sort)
+
 # ==========================================
-# 💾 GUARDAR
+# 💾 EXPORTAR
 # ==========================================
 
 os.makedirs(CARPETA_SALIDA, exist_ok=True)
@@ -115,4 +136,7 @@ ruta = f"{CARPETA_SALIDA}/reporte_{timestamp}.xlsx"
 
 df_resultado.to_excel(ruta, index=False)
 
-print(f"Archivo generado: {ruta}")
+print("\n📄 Resultado generado:")
+print(df_resultado.head(10))
+
+print(f"\n✅ Reporte guardado en: {ruta}")
